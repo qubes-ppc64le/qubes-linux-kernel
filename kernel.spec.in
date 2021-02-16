@@ -217,8 +217,10 @@ tar -x -C %_builddir -zf %{SOURCE1}
 rm -rf %_builddir/dummy-backlight
 tar -x -C %_builddir -zf %{SOURCE2}
 
+%if x%{?backend_vmm} == xxen
 rm -rf %_builddir/u2mfn
 tar -x -C %_builddir -zf %{SOURCE3} --strip-components=2 linux-utils/kernel-modules/u2mfn
+%endif
 
 rm -rf %_builddir/wireguard
 tar x -C %_builddir -Jpf %{SOURCE5}
@@ -463,7 +465,7 @@ PATH="/sbin:$PATH" dracut --nomdadmconf --nolvmconf \
     --kmoddir %buildroot/lib/modules/%kernelrelease \
     --modules "kernel-modules qubes-vm-simple" \
     --conf /dev/null --confdir /var/empty \
-    -d "xenblk xen-blkfront cdrom ext4 jbd2 crc16 dm_snapshot" \
+    -d "xenblk xen-blkfront cdrom ext4 virtio virtio_blk jbd2 crc16 dm_snapshot" \
     %buildroot/%vm_install_dir/initramfs %kernelrelease || exit 1
 
 # workaround for buggy dracut-044 in Fedora 25
